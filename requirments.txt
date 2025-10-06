@@ -1,0 +1,7 @@
+Django==5.1.4
+django-celery-beat
+celery
+redis
+django-haystack
+Whoosh
+django-paypal

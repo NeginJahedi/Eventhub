@@ -1,0 +1,108 @@
+{% extends "events/layout.html" %}
+<!-- Hero Section -->
+{% block title %} Create Your Event {% endblock %}
+{% block subtitle %} Share your event with the world in just a few steps. {% endblock %}
+
+{% block body %}
+  <!-- Create Event Form -->
+  <section class="create-event-form py-5">
+    <div class="container">
+      <h2 class="text-center mb-4">Event Details</h2>
+      <form method="post" enctype="multipart/form-data" class="p-4 bg-dark text-white rounded shadow">
+        {% csrf_token %}
+        
+        <!-- Row 1: Title & Category -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="eventTitle" class="form-label">{{ form.title.label }}</label>
+                {{ form.title }}
+                {% for error in form.title.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-6">
+                <label for="eventCategory" class="form-label">{{ form.category.label }}</label>
+                {{ form.category }}
+                {% for error in form.category.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- Row 2: Date & Time -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="eventDate" class="form-label">{{ form.date.label }}</label>
+                {{ form.date }}
+                {% for error in form.date.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-6">
+                <label for="eventTime" class="form-label">{{ form.time.label }}</label>
+                {{ form.time }}
+                {% for error in form.time.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- Row 3: Location & Image -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="eventLocation" class="form-label">{{ form.location.label }}</label>
+                {{ form.location }}
+                {% for error in form.location.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-6">
+                <label for="eventImage" class="form-label">{{ form.image.label }}</label>
+                {{ form.image }}
+                {% for error in form.image.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- Row 4: Price -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="eventPrice" class="form-label">{{ form.price.label }}</label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    {{ form.price }}
+                </div>
+                {% for error in form.price.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-6">
+                <label for="eventCapacity" class="form-label">{{ form.tickets_available.label }}</label>
+                {{ form.tickets_available }}
+                {% for error in form.image.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- Description -->
+        <div class="mb-3">
+            <label for="eventDescription" class="form-label">{{ form.description.label }}</label>
+            {{ form.description }}
+            {% for error in form.description.errors %}
+                <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    
+        <!-- Submit Button -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-lg btn-primary px-4 shadow main-btn">Create Event</button>
+        </div>
+    </form>
+    
+    
+    </div>
+  </section>
+
+{% endblock %}

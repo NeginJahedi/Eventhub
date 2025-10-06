@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EventHub - Events Listing</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+    <div class="container">
+      <a class="navbar-brand" href="#">EventHub</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="about.html">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contact.html">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero-section py-5 text-center text-light">
+    <div class="container">
+      <h1 class="display-4">Find Your Next Adventure</h1>
+      <p class="lead">Browse through the best events happening near you.</p>
+    </div>
+  </header>
+
+  <!-- Filters Section -->
+  <section class="filters py-4 bg-light">
+    <div class="container">
+      <form class="row g-3">
+        <div class="col-md-4">
+          <input type="text" class="form-control" placeholder="Search events...">
+        </div>
+        <div class="col-md-3">
+          <select class="form-select">
+            <option selected>Category</option>
+            <option value="1">Music</option>
+            <option value="2">Sports</option>
+            <option value="3">Workshops</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-select">
+            <option selected>Location</option>
+            <option value="1">New York</option>
+            <option value="2">Los Angeles</option>
+            <option value="3">Chicago</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Events Listing Section -->
+  <section class="events-listing py-5">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card">
+            <img src="images/event1.jpg" class="card-img-top" alt="Event 1">
+            <div class="card-body">
+              <h5 class="card-title">Music Festival</h5>
+              <p class="card-text">Join us for an unforgettable music festival experience.</p>
+              <a href="event-details.html" class="btn btn-outline-primary">View Details</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img src="images/event2.jpg" class="card-img-top" alt="Event 2">
+            <div class="card-body">
+              <h5 class="card-title">Tech Conference</h5>
+              <p class="card-text">Explore the latest in technology at our annual conference.</p>
+              <a href="event-details.html" class="btn btn-outline-primary">View Details</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img src="images/event3.jpg" class="card-img-top" alt="Event 3">
+            <div class="card-body">
+              <h5 class="card-title">Art Workshop</h5>
+              <p class="card-text">Unleash your creativity with our guided art workshop.</p>
+              <a href="event-details.html" class="btn btn-outline-primary">View Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pagination -->
+  <nav aria-label="Page navigation" class="py-4 text-center">
+    <ul class="pagination justify-content-center">
+      <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1">Previous</a>
+      </li>
+      <li class="page-item"><a class="page-link" href="#">1</a></li>
+      <li class="page-item"><a class="page-link" href="#">2</a></li>
+      <li class="page-item"><a class="page-link" href="#">3</a></li>
+      <li class="page-item">
+        <a class="page-link" href="#">Next</a>
+      </li>
+    </ul>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

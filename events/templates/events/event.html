@@ -1,0 +1,61 @@
+{% extends "events/layout.html" %}
+
+{% block body %}
+
+{% if messages %}
+    {%for message in messages%}
+        <div class="w-50 mx-auto">
+            <div class="alert alert-danger text-center rounded shadow-lg p-1 m-0" role="alert">
+                <span class="text-muted"> {{message}} </span>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="event-container  m-5 w-75 mx-auto">
+    <div class="bg-secondary-color rounded-4 justify-content-between shadow-lg  overflow-hidden row">
+        <img src="{{event.image.url}}" class="p-0 col-6 object-cover img-fluid" ratio="1x1" alt="Event Image">
+        <div class="p-4 pl-5 col-6">
+            <h1 class="text-3xl font-bold text-primary-color">{{event.title}}</h1>
+            <p class="text-lg text-dark-color mt-2">Category: <span class="fw-semibold text-highlight-color">{{event.category}}</span></p>
+            <p class="text-dark-color mt-3">{{event.description}}</p>
+            
+            <div class="" id="event-description">
+                <p class="text-md text-dark-color"><strong>Organized by:</strong> {{event.organizer.username}} </p>
+                <p class="text-md text-dark-color"><strong>Location:</strong> {{event.location}} </p>
+                <p class="text-md text-dark-color"><strong>Date:</strong> {{event.date}} </p>
+                <p class="text-md text-dark-color"><strong>Time:</strong> {{event.time}} </p>
+                <p class="text-md text-dark-color"><strong>Price:</strong> ${{event.price}} per ticket</p>
+                <p class="text-md text-dark-color"><strong>Tickets Remaining:</strong> {{event.tickets_remaining}}</p>
+                {% if event.status == "past" %}
+                <p class="alert alert-info  text-center mt-5"> Ticket sales are closed! </p>
+                {% endif %}
+                {% if event.status == "sold-out" %}
+                <p class="alert alert-info  text-center mt-5"> Event Sold Out! </p>
+                {% endif %}
+            </div>
+            {% if request.user != event.organizer %}
+            <form action="{% url 'buy' event.id %}" method="post">
+                {% csrf_token %}
+                <div class="mt-4 ticket-selection row">
+                    <label for="ticket-quantity" class="text-md text-dark-color col-3"><strong>Tickets:</strong></label>
+                    <select id="ticket-quantity" name="quantity" class="form-select w-auto col-3 bg-dark text-white">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+    
+                
+                    <div class="mt-4 d-flex gap-3">
+                        <button  type="submit"  class="btn btn-primary px-4 py-2 rounded">Buy Ticket</buttton>
+                    </div>
+                
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

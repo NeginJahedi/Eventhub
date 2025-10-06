@@ -1,0 +1,61 @@
+{% extends "events/layout.html" %}
+
+{% block body %}
+    <div class="container py-2 w-75">
+        <div class="card mx-auto shadow-lg">
+            <!-- Ticket Header -->
+            <div class="card-header bg-secondary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-end">
+                        <div class="fs-5">DATE {{ ticket_bought.event.date }} </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticket Body -->
+            <div class="card-body">
+                <!-- Event Details -->
+                <div class="row border-bottom mb-2 pb-2">
+                    <div class="col-8">
+                        <h1 class="card-title"> {{ ticket_bought.event.title }} </h1>
+                        <p class="lead mb-1">Organizer: {{ ticket_bought.event.organizer }} </p>
+                        <p class="mb-1"> {{ ticket_bought.event.location }} </p>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div class="bg-light p-2 rounded">
+                            <div class="fw-bold">PRICE</div>
+                            <div class="fs-4">${{ total_price }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendee Info -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="fw-bold">ATTENDEE</div>
+                        <div>{{ticket_bought.attender}}</div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <div class="fw-bold">TICKET ID</div>
+                        <div>{{ticket_bought.id}}</div>
+                    </div>
+                </div>
+
+                <!-- Barcode Section -->
+                <div class="bg-dark text-white p-3 rounded text-center mb-3">
+                    <div class="font-monospace mb-1">|||| |||| |||| |||| ||||</div>
+                    <div class="small">SCAN CODE AT ENTRANCE</div>
+                </div>
+
+                <!-- Footer Terms -->
+                <div class="text-center small text-muted">
+                    <div class="mb-1">Non-transferable • Valid ID required</div>
+                    <div>No re-entry • Not valid for resale</div>
+                </div>
+            </div>
+
+            <!-- Ticket Tear Strip -->
+            <div class="card-footer bg-secondary py-2"></div>
+        </div>
+    </div>
+{% endblock %}

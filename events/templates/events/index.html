@@ -1,0 +1,167 @@
+{% extends "events/layout.html" %}
+{% load static %}
+
+<!-- Hero Section -->
+{% block body %}
+  
+<header class="hero-section text-center d-flex align-items-center justify-content-center p-5">
+  <div class="container">
+    <h1 class="display-4">Explore the World. Create Memories. </h1>
+    <p class="lead">From music festivals to local meetups, explore the best events happening now. </p>
+    <a href="{% url 'index' %}#allEvents" class="btn btn-primary btn-lg mt-3">Explore Events</a>
+  </div>
+</header>
+
+    <div class="container my-4">
+        <div class="row">
+            <h5 class="">Search for Events</h5>
+        </div>
+
+        <div class="row d-flex justify-content-between align-items-center mb-3">
+            
+            <!-- SEARCH BAR AND FILTERS -->
+            <div class="row g-2 align-items-center mb-4">
+              <div class="col-md-2">
+                <label for="searchInput" class="form-label">Event Title</label>
+                <input
+                  name="searchkeyword"
+                  type="text"
+                  id="searchkeyword"
+                  class="form-control"
+                  placeholder="Search by event name..."
+                />
+              </div>
+              <div class="col-md-2">
+                <label for="categorySelect" class="form-label">Category</label>
+                  <select name="category" id="category" class="form-select">
+                  <option value="">All Categories</option>
+                  {%for category in categories %}
+                    <option size="4" value="{{category}}">{{category}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            
+            <div class="col-md-2">
+              <label for="location" class="form-label">Location</label>
+              <input
+                name="location"
+                type="text"
+                id="location"
+                class="form-control"
+                placeholder="Enter location..."
+              />
+            </div>
+            <div class="col-md-2 justify-content-between">
+              <label for="minPrice" class="form-label">Min Price</label>
+              <input
+                name="min_price"
+                type="number"
+                id="minPrice"
+                class="form-control"
+                placeholder="Min Price"
+                min="0"
+                step="0.01"
+              />
+              <label for="maxPrice" class="form-label">Max Price</label>
+              <input
+                name="max_price"
+                type="number"
+                id="maxPrice"
+                class="form-control"
+                placeholder="Max Price"
+                min="0"
+                step="0.01"
+              />
+            </div>
+            <div class="col-md-2 justify-content-between">
+                <label for="startDateFilter" class="form-label">Start Date</label>
+                <input
+                name="start_date"
+                type="date"
+                id="startDateFilter"
+                class="form-control"
+                />
+                <label for="endDateFilter" class="form-label">End Date</label>
+                <input
+                name="end_date"
+                type="date"
+                id="endDateFilter"
+                class="form-control"
+                />
+            </div>
+
+              <div class="col-md-2 d-grid">
+                <button name="search-btn" id="search-btn" class="btn btn-primary mt-4">Search</button>
+              </div>
+            </div>
+        
+             {% comment %} RESULTS SECTION {% endcomment %}
+            <div 
+              style="display:none;"
+              class="row flex-row align-itms-center justify-content-between mt-4 p-0 mx-0" 
+              id="searchResults"
+            ></div>
+              
+              
+        </div>
+        
+        <div class="row align-itms-center justify-content-between" id="allEvents">
+          {% for event in page_obj %}
+            <div class="col-md-4 mb-3">
+              <a href="{% url 'event' event.id %}">
+                <div class="card event-card text-white">
+                  <img src="{{event.image.url}}" class="card-img" alt="Event Image">
+                  <div class="card-img-overlay d-flex flex-column justify-content-between">
+                    <h5 class="card-title">{{event.title}}</h5>
+                    <div class="event-details text-white">
+                      <span><i class="bi bi-calendar"></i> {{event.date}}</span>
+                      <span><i class="bi bi-geo-alt"></i> {{event.location}}</span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          {% endfor %} 
+        </div>
+        <div class="row p-5">
+          <nav aria-label="Page navigation col-12">
+            <ul class="pagination justify-content-center">
+              {% if page_obj.has_previous %}
+                  <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                  </a>
+                  </li>
+              {% else %}
+              <li class="page-item disabled">
+                  <a class="page-link" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                  </a>
+              </li>
+              {% endif %}
+              
+              {% for i in page_obj.paginator.page_range %}
+              <li class="page-item"><a class="page-link" href="?page={{ i }}">{{i}}</a></li>
+              {% endfor %}
+
+              {% if page_obj.has_next %}
+              <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                  </a>
+              </li>
+              {% else %}
+              <li class="page-item disabled">
+                  <a class="page-link" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                  </a>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+    </div>
+    
+    {% endblock %}
+
+    

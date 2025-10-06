@@ -1,0 +1,339 @@
+{% extends "events/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+    <!--
+    <nav class="col-md-3 col-lg-2 d-md-block bg-white shadow-md sidebar collapse" id="sidebarMenu" >
+        <div class="position-sticky pt-3">
+          
+        
+          <div class="text-center mb-4">
+            
+            <h6 class="fw-bold mb-0"> {{request.user.username}} </h6>
+            {% if request.user.is_organizer %}
+                <span class="fw-bold accent">Organizer</span>
+            {% endif %}
+          </div>
+  
+        
+          <ul class="nav flex-column " >
+            <li class="nav-item">
+              <a class="nav-link text-dark active" aria-current="page" href="#Overview">
+                Dashboard Overview
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="#Events">
+                Events
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="#Attendees-Demographics">
+                Attendees
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="#ticketSalesChart">
+                Ticketing
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="#Analytics">
+                Analytics
+              </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="#revenueChart">
+                  Revenue per Event
+                </a>
+              </li>
+          </ul>
+  
+          <hr>
+  
+        
+          <ul class="nav flex-column mb-2">
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="#">
+                Settings
+              </a>
+            </li>
+            
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="{% url 'logout' %}">
+                Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    -->
+        <!-- Main Content -->
+        <main class=" col-12 p-4">
+            <!-- Header with Create Button -->
+            <div id="Overview" class="d-flex justify-content-between align-items-center ">
+                <h2>Dashboard Overview</h2>
+                {% comment %} <a href="{% url 'create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create Event
+                </a> {% endcomment %}
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-4 d-flex flex-inline">
+                <div class="col-12 col-sm-6 col-xl-4">
+                    <div class="card bg-primary-subtle text-dark shadow">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Events</h5>
+                            <h2 class="card-text">{{ organized_events.count }}</h2>
+                            <small><i class="fas fa-arrow-up me-1"></i>12% from last month</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-4">
+                    <div class="card bg-success-subtle text-dark shadow">
+                        <div class="card-body">
+                            <h5 class="card-title">Tickets Sold</h5>
+                            <h2 class="card-text">{{ tickets_sold }}</h2>
+                            <small><i class="fas fa-exchange-alt me-1"></i>{{ active_events }} active events</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-4">
+                    <div class="card bg-warning-subtle text-dark shadow">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Revenue</h5>
+                            <h2 class="card-text">${{ total_revenue }}</h2>
+                            <small><i class="fas fa-percent me-1"></i>2.5% processing fees</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event Management Section -->
+            <div id="Events" class="card shadow">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Event Management</h5>
+                    <div class="d-flex gap-2">
+                        <input type="text" class="form-control form-control-sm" id="searchinput" placeholder="Search events...">
+                        <select class="filter form-select" id="filterSelect">
+                            <option value="" disabled selected>-- Select a Filter --</option>
+                            <option value="all">All Events</option>
+                            <option value="active">Active Events</option>
+                            <option value="past">Past Events</option>
+                        </select>
+    
+                    </div>
+                </div>
+                
+                <!-- Events Table -->
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Event Name</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Tickets Sold</th>
+                                    <th>Revenue</th>
+                                    <th>Actions</th>
+                                    <th>Tickets</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventstable">
+                                {% for event in organized_events %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'event' event.id %}" class="text-decoration-none">
+                                            {{ event.title }}
+                                        </a>
+                                    </td>
+                                    <td>{{ event.date|date:"M d, Y" }}</td>
+
+                                    <td>
+                                        {% if event.status == "sold_out" %}
+                                        <span class="badge text-warning">
+                                            {{ event.get_status_display }}
+                                        </span>
+                                        {% elif event.status == "canceled" %}
+                                        <span class="badge text-danger">
+                                            {{ event.get_status_display }}
+                                        </span>
+                                        {% elif event.status == "active" %}
+                                        <span class="badge text-success">
+                                            {{ event.get_status_display }}
+                                        </span>
+                                        {% else %}
+                                        <span class="badge text-secondary">
+                                            {{ event.get_status_display }}
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ event.tickets_sold }}</td>
+                                    <td>${{ event.revenue }}</td>
+                                    <td>
+                                        <div>
+                                            <a class="btn btn-sm btn-outline-secondary"
+                                                    href="{% url 'edit_event' event.id %}">
+                                                Manage
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <a class="btn btn-sm btn-outline-secondary"
+                                                    href="{% url 'tickets' event.id %}">
+                                                Tickets
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        No events found. <a href="{% url 'create_event' %}">Create your first event!</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <nav aria-label="Event pagination">
+                        <ul class="pagination justify-content-end mb-0">
+                            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            {% comment %} 
+            <!-- Quick Stats Section -->
+            <div class="row mt-4" id="Analytics">
+                <!-- Ticket Sales Chart -->
+                <div class="col-lg-12">
+                    <div class="card shadow">
+                        <div class="card-header">
+                            <h6 class="mb-0">Ticket Sales per Event</h6>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="ticketSalesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Revenue Chart -->
+                <div class="col-lg-12">
+                    <div class="card shadow">
+                        <div class="card-header">
+                            <h6 class="mb-0">Revenue per Event</h6>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Category-wise Ticket Sales -->
+                <div class="col-lg-12" id="Attendees-Demographics">
+                    <div class="card shadow">
+                        <div class="card-header">
+                            <h6 class="mb-0">Attendee Demographics</h6>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endcomment %}
+            
+            
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'events/js/filter.js' %}"></script>
+
+    {% comment %} <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ticketSalesCtx = document.getElementById("ticketSalesChart").getContext("2d");
+            const revenueCtx = document.getElementById("revenueChart").getContext("2d");
+            const categoryCtx = document.getElementById("categoryChart").getContext("2d");
+    
+            // Data from Django
+            const eventLabels = {{ event_labels|safe }};
+            const salesData = {{ sales_data|safe }};
+            const revenueData = {{ revenue_data|safe }};
+            const categoryLabels = {{ category_labels|safe }};
+            const categorySales = {{ category_sales|safe }};
+    
+            // Ticket Sales Chart
+            new Chart(ticketSalesCtx, {
+                type: "bar",
+                data: {
+                    labels: eventLabels,
+                    datasets: [{
+                        label: "Tickets Sold",
+                        data: salesData,
+                        backgroundColor: "rgba(54, 162, 235, 0.6)"
+                    }]
+                },
+                options: {
+                    annimation: false
+                }
+            });
+    
+            // Revenue Chart
+            new Chart(revenueCtx, {
+                type: "line",
+                data: {
+                    labels: eventLabels,
+                    datasets: [{
+                        label: "Revenue ($)",
+                        data: revenueData,
+                        borderColor: "rgba(255, 99, 132, 1)",
+                        backgroundColor: "rgba(255, 99, 132, 0.2)",
+                        fill: true
+                    }]
+                },
+                options: {
+                    annimation: false
+                }
+            });
+    
+            // Attendee Demographics Chart
+            new Chart(categoryCtx, {
+                type: "pie",
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        label: "Ticket Sales by Category",
+                        data: categorySales,
+                        backgroundColor: [
+                            "rgba(255, 99, 132, 0.6)",
+                            "rgba(54, 162, 235, 0.6)",
+                            "rgba(255, 206, 86, 0.6)",
+                            "rgba(75, 192, 192, 0.6)",
+                            "rgba(153, 102, 255, 0.6)",
+                            "rgba(255, 159, 64, 0.6)"
+                        ]
+                    }]
+                },
+                options: {
+                    annimation: false
+                }
+            });
+        });
+    </script> {% endcomment %}
+    
+{% endblock %}
+
