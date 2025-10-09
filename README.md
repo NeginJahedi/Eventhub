@@ -1,9 +1,9 @@
 # EventHub
 On Eventhub you can explore and buy tickets for events or organize your own.
 
-#### [Video Demo](https://youtu.be/u50hHrW1qJc)
+#### [Watch Video Demo On Youtube](https://youtu.be/u50hHrW1qJc)
 
-
+![Project Demo](Eventhub-demo.gif)
 
 ## Table of Contents
 - [Overview](#overview)
