@@ -23,7 +23,7 @@ from .utils import send_ticket_email
 N = 10  #number of events on each page
 M = 10  #number of tickets on each page
 
-# Create your views here.
+# Create your views here..
 def index(request):
     events = Event.objects.all()
     categories = Event.CATEGORY_CHOICES
