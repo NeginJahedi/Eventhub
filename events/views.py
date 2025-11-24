@@ -18,7 +18,7 @@ from django.db.models import Count
 from decimal import Decimal
 from django.core.serializers import serialize
 from .helper import organizer_required, paginate_queryset
-from .utils import send_ticket_email
+from .tasks import send_ticket_email
 
 N = 10  #number of events on each page
 M = 10  #number of tickets on each page
@@ -141,15 +141,16 @@ def buy_ticket_view(request, event_id):
                 event_obj.is_sold_out = True
                 event_obj.status = "sold_out"
             messages.success(request, f"Ticket was purchased successfully.")
-            # ticket_details = f"Event: {ticket_bought.event.title}\nDate: {ticket_bought.event.date}\n"
-            # send_ticket_email(request.user.email, ticket_details)
+            
+            # sendticket confirmation email
+            ticket_info = f"Event: {ticket_bought.event.title}\nDate: {ticket_bought.event.date}\nLocation: {ticket_bought.event.location}"
+            send_ticket_email.delay(request.user.email, ticket_info)
             return render(request, "events/reciept.html", {
                 "ticket_bought" : ticket_bought,
                 "total_price" : total_price
             })
             
-            
-       
+      
     return HttpResponseRedirect(reverse("event", args=(event_id,) )) 
 
 

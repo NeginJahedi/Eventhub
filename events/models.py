@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models import Sum
 from django.utils import timezone
 
+
 # Create your models here.
 class User(AbstractUser):
     is_organizer = models.BooleanField(default=False)
