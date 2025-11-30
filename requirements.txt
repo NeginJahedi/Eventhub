@@ -1,0 +1,13 @@
+Django
+Pillow
+django-celery-beat
+celery
+redis
+django-haystack
+Whoosh
+django-paypal
+psycopg2-binary
+gunicorn
+dj-database-url
+python-dotenv
+whitenoise

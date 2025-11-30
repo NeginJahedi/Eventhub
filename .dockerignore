@@ -1,0 +1,37 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Env files
+.env
+*.env
+
+# Git
+.git
+.gitignore
+
+# IDE / editor
+.vscode/
+*.idea/
+
+
+
+# Media uploads
+media/
+
+# Haystack index
+whoosh_index/
+
+# Django static collected (we bake it into image)
+staticfiles/
+
+# Logs
+*.log
+
+# large files
+Eventhub-demo.gif
+
+#  unnecessary 
+README.md

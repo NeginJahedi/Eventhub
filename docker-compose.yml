@@ -1,0 +1,71 @@
+networks:
+  eventhub-net:
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - eventhub-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    restart: always
+    networks:
+      - eventhub-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+
+  web:
+    build: .
+    command: gunicorn EventHub.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - eventhub-net
+    volumes:
+      - media_volume:/app/media
+      - static_volume:/app/staticfiles
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
+      interval: 30s
+      retries: 3
+
+  nginx:
+    image: nginx:stable
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d  # Nginx config
+      - static_volume:/app/staticfiles    # collectstatic output
+      - media_volume:/app/media           # media uploads
+    depends_on:
+      - web
+    networks:
+      - eventhub-net
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

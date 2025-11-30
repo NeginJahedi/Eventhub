@@ -316,7 +316,7 @@ def filter_view(request):
         search_results = Event.objects.all().order_by('-date')
         search_results = search_results.filter(organizer=request.user)
         
-        print(request.user)
+        # print(request.user)
         # print(search_results)
         if query:
             # print(query)
