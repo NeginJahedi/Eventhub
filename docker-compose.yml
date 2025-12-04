@@ -46,11 +46,12 @@ services:
       - media_volume:/app/media
       - static_volume:/app/staticfiles
     healthcheck:
-      test: ["CMD-SHELL", "python - << 'EOF'\nimport urllib.request, sys\ntry:\n    urllib.request.urlopen('http://localhost:8000', timeout=2)\n    sys.exit(0)\nexcept:\n    sys.exit(1)\nEOF"]
+      test: ["CMD", "bash", "-c", "</dev/tcp/localhost/8000"]
       interval: 10s
       timeout: 3s
       retries: 5
       start_period: 20s
+
 
 
 
