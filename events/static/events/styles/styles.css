@@ -98,6 +98,9 @@ body {
   margin-bottom: 2rem;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
+#featured-events .event-card img {
+  aspect-ratio: 1/1 !important;
+}
 #featured-events .card {
   border: 1px solid #f8f9fa;
   border-radius: 0.5rem;
