@@ -65,17 +65,21 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d  # Nginx config
       - static_volume:/app/staticfiles    # collectstatic output
       - media_volume:/app/media           # media uploads
+      - ./nginx/certbot/www:/var/www/certbot
+      - ./nginx/certbot/conf:/etc/letsencrypt
+
     depends_on:
       web:
         condition: service_healthy
     networks:
       - eventhub-net
 
-  # certbot:
-  #   image: certbot/certbot
-  #   volumes:
-  #     - ./nginx/certbot/www:/var/www/certbot
-  #     - ./nginx/certbot/conf:/etc/letsencrypt
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./nginx/certbot/www:/var/www/certbot
+      - ./nginx/certbot/conf:/etc/letsencrypt
+
 
 volumes:
   postgres_data:
