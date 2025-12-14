@@ -7,6 +7,8 @@ set -e
 # Apply migrations
 python manage.py migrate --noinput
 
+python manage.py collectstatic --noinput
+
 # Load initial data 
 if [ ! -f "/app/.data_loaded" ]; then
     python manage.py loaddata initial_data.json || true

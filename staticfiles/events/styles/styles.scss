@@ -1,0 +1,390 @@
+
+// main.scss
+
+// Variables
+$primary-color: #4635B1; // Blue for buttons and accents
+$secondary-color: #ffffff; // White for text and highlights
+$light-color: #f8f9fa;
+$dark-color: #252525; // Dark shade for contrast
+$highlight-color: #B771E5; // Purple for vibrant elements
+$font-stack: 'Poppins', sans-serif;
+
+// Mixins
+@mixin card-style {
+  border: 1px solid $light-color;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.accent{
+  color: $highlight-color;
+}
+html, body {
+  overflow-x: hidden !important;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: $font-stack;
+  color: $secondary-color;
+  background-color: $dark-color;
+  box-sizing: border-box;
+  
+  width: 100%;
+}
+
+// Navbar
+.navbar {
+  background-color: rgba(#000, 0.3);
+  backdrop-filter: blur(40px);
+  // position: absolute;
+  width: 100%;
+  z-index: 10;
+  min-height: max-content;
+  
+  .navbar-brand {
+    color: $secondary-color;
+    font-weight: bold;
+    &:hover {
+      color:$highlight-color;
+    }
+  }
+  .nav-item{
+    padding-inline: 10px;
+  }
+
+  .nav-link, .nav-link.active {
+    
+    color: $secondary-color !important;
+    &:hover {
+      color:$highlight-color;
+    }
+  }
+  #create{
+    color: $light-color;
+    &:hover{
+      color:$highlight-color;
+      
+    }
+  }
+}
+
+// Hero Section
+.hero-section {
+  background: url('../imgs/hero/concert.png') no-repeat top center/cover;
+  min-height: 80vh;
+  display: flex;
+  
+  align-items: center;
+  color: $secondary-color;
+  
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+
+  h1 {
+    font-size: 3.3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    color: #fff;
+    text-shadow:0 2px 4px rgba(0, 0, 0, 1);
+  }
+
+  .btn {
+    backdrop-filter: blur(2px);
+    background: transparent;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: $secondary-color;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    transition: all 50s ease-in;
+    &:hover {
+      background: linear-gradient(135deg, lighten($primary-color, 10%), lighten($highlight-color, 10%));
+    }
+  }
+  
+}
+
+// Featured Events
+#featured-events {
+  padding: 3rem 0;
+
+  h2 {
+    color: $secondary-color;
+    margin-bottom: 2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  .event-card{
+    img{
+      aspect-ratio: 1/1 !important;
+    }
+  }
+  .card {
+    @include card-style;
+
+    img {
+      max-height: 200px;
+      object-fit: cover;
+    }
+
+    .card-body {
+      h5 {
+        color: $highlight-color;
+      }
+
+      .btn {
+        color: $primary-color;
+        border-color: $primary-color;
+        &:hover {
+          background-color: $primary-color;
+          color: $light-color;
+        }
+      }
+    }
+  }
+}
+
+// Footer
+footer {
+  background-color: $dark-color;
+  color: $secondary-color;
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+}
+ 
+
+.main-btn{
+  background: linear-gradient(135deg, lighten($primary-color, 20%), lighten($highlight-color, 10%));
+  color: #fff;
+  border-color: $dark-color;
+  &:hover {
+    background: linear-gradient(135deg, darken($primary-color, 20%), darken($highlight-color, 10%));
+    color: #fff;
+    border-color: $dark-color;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+  }
+}
+
+
+
+
+.auth-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    background: rgba(70, 53, 177, 0.3);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.auth-container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: $highlight-color;
+}
+
+.auth-container input {
+    width: 100%;
+    padding: 0px;
+    margin: 0px 0;
+    margin-bottom: 0px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.2);
+    color: $secondary-color;
+    outline: none;
+}
+
+.auth-container input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.auth-container button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, $primary-color, $highlight-color);
+    color: $secondary-color;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.auth-container button:hover {
+    background: linear-gradient(135deg, darken($primary-color, 10%), darken($highlight-color, 10%));
+}
+
+.auth-container p {
+    margin-top: 0px;
+    color: $light-color;
+}
+
+.auth-container a {
+    color: $highlight-color;
+    text-decoration: none;
+}
+
+.auth-container a:hover {
+    text-decoration: underline;
+}
+
+.events{
+  h2{
+    text-shadow:1px 4px 6px rgba(0, 0, 255, 0.9);
+  }
+}
+
+
+.event-card {
+  border-color: #1B1B1B;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.event-card img {
+  aspect-ratio: 1/1 !important;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.event-card .card-img-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+  padding: 20px;
+}
+.event-details {
+  position: relative;
+  z-index: 2;
+}
+
+// Variables
+$primary-color: #4635B1; // Blue for buttons and accents
+$secondary-color: #ffffff; // White for text and highlights
+$light-color: #f8f9fa;
+$dark-color: #1b1b1b; // Dark shade for contrast
+$highlight-color: #B771E5; // Purple for vibrant elements
+$font-stack: 'Poppins', sans-serif;
+
+
+
+// Event Container
+.event-container {
+    margin: 5% 10%;
+    background: transparent;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+    overflow: hidden;
+}
+
+// Event Image
+.event-image {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    border-bottom: 5px solid $primary-color;
+}
+
+// Event Content
+.event-content {
+    padding: 30px;
+}
+
+.event-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: $primary-color;
+}
+
+.event-category {
+    font-size: 1rem;
+    color: $highlight-color;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.event-description {
+    font-size: 1rem;
+    color: $dark-color;
+    margin-top: 15px;
+    line-height: 1.6;
+}
+
+// Event Details
+.event-details {
+    margin-top: 20px;
+    font-size: 1rem;
+    color: $dark-color;
+    line-height: 1.6;
+}
+
+.event-details strong {
+    color: $primary-color;
+}
+
+
+
+// Buttons
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-primary {
+    background: $primary-color;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: $secondary-color;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-primary:hover {
+    background: darken($primary-color, 10%);
+}
+
+.btn-outline-primary {
+    border: 2px solid $highlight-color;
+    color: $highlight-color;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-outline-primary:hover {
+    background: $highlight-color;
+    color: $secondary-color;
+}
+
