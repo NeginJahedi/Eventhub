@@ -8,23 +8,57 @@
         <div>{{ message }}</div>
     {% endif %}
 
-    <form action="{% url 'register' %}" method="post" class="m-auto">
-        {% csrf_token %}
-        <div class="form-group">
-            <input class="form-control py-2 px-1" autofocus type="text" name="username" placeholder="Username">
-        </div>
-        <div class="form-group">
-            <input class="form-control py-2 px-1" type="email" name="email" placeholder="Email Address">
-        </div>
-        <div class="form-group">
-            <input class="form-control py-2 px-1" type="password" name="password" placeholder="Password">
-        </div>
-        <div class="form-group">
-            <input class="form-control py-2 px-1" type="password" name="confirmation" placeholder="Confirm Password">
-        </div>
-        <input class="btn btn-primary py-2 px-1" type="submit" value="Register">
-    </form>
+    
+                <form method="post" class="auth">
+            {% csrf_token %}
 
-    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+            <input
+              required
+              type="text"
+              name="username"
+              placeholder="Username"
+              value="{{ form.username.value|default:'' }}"
+              autocomplete="username"
+            />
+
+            <input
+              required
+              type="password"
+              name="password1"
+              placeholder="Password"
+              autocomplete="new-password"
+            />
+
+            <input
+              required
+              type="password"
+              name="password2"
+              placeholder="Confirm password"
+              autocomplete="new-password"
+            />
+
+            {% if form.errors %}
+              <div class="error">
+                {{ form.errors.as_text }}
+              </div>
+            {% endif %}
+
+            <button>Create account</button>
+          </form>
+
+
+            Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+           
+
+        {% for field in form %}
+  {% for error in field.errors %}
+    <script>
+      const field = document.querySelector('[name="{{ field.name }}"]')
+      const errorEl = field.parentElement.querySelector('.error')
+      errorEl.textContent = "{{ error|escapejs }}"
+      errorEl.style.display = "block"
+    </script>
+  {% endfor %}
+{% endfor %}
 </div>
 {% endblock %}

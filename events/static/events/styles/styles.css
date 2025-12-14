@@ -337,4 +337,52 @@ footer p {
 .btn-outline-primary:hover {
   background: #B771E5;
   color: #ffffff;
-}/*# sourceMappingURL=styles.css.map */
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+}
+
+.auth {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth input {
+  padding: 14px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  outline: none;
+}
+
+.auth input:focus {
+  border-color: #6366f1;
+}
+
+.auth button {
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: #111827;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.error {
+  padding: 14px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  font-size: 12px;
+  color: #fff;
+  background-color: rgba(152, 55, 52, 0.3);
+  border: 1px solid rgba(152, 55, 52, 0.3);
+  line-height: 1.4;
+}
+
+/*# sourceMappingURL=styles.css.map */

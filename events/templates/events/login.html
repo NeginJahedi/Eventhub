@@ -11,18 +11,44 @@
                     <div>{{ message }}</div>
                 {% endif %}
         
-                <form action="{% url 'login' %}" method="post" class="m-auto">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <input autofocus class="form-control py-2 px-1 " type="text" name="username" placeholder="Username">
+                
+                <form method="post" class="auth">
+                {% csrf_token %}
+
+                <input
+                    required
+                    type="text"
+                    name="username"
+                    placeholder="Username or email"
+                    value="{{ form.username.value|default:'' }}"
+                    autocomplete="username"
+                />
+
+                <input
+                    required
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    autocomplete="current-password"
+                />
+
+                {% if form.non_field_errors %}
+                    <div class="error">
+                    {{ form.non_field_errors.0 }}
                     </div>
-                    <div class="form-group">
-                        <input class="form-control py-2 px-1 " type="password" name="password" placeholder="Password">
+                {% endif %}
+                {% if form.errors %}
+                    <div class="error">
+                    Invalid credentials or missing fields
                     </div>
-                    <input class="btn btn-primary" type="submit" value="Login">
+                {% endif %}
+
+                <button>Sign in</button>
                 </form>
-        
-                Don't have an account? <a href="{% url 'register' %}" class="my-3">Register here.</a>
+
+
+            Don't have an account? <a href="{% url 'register' %}">Register here.</a>
+                    
         
             </div>
         </div>
