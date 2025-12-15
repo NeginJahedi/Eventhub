@@ -1,7 +1,7 @@
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Subquery
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -43,7 +43,7 @@ def index(request):
 
 
 # Create your views here.
-def register(request):
+def register_view(request):
     if request.method == "POST":
         # register user
         form = EventsUserCreationForm(request.POST)
@@ -59,7 +59,7 @@ def register(request):
         "form" : form
     })
 
-def login(request):
+def login_view(request):
     if request.method == "POST":
         form = AuthenticationForm(request, request.POST)
         if form.is_valid():
@@ -74,7 +74,7 @@ def login(request):
     })
 
 
-def logout(request):
+def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
@@ -109,40 +109,73 @@ def event_view(request, event_id):
  
 @login_required   
 def buy_ticket_view(request, event_id):
-    if request.method=="POST":
-        event_obj = get_object_or_404(Event, id=event_id)
-        quantity = int(request.POST.get("quantity"))
-        
-        if event_obj.is_sold_out():
-            messages.warning(request, f"Sold Out! No More Tickets Available")
-        elif quantity > event_obj.tickets_remaining():
-            messages.warning(request, f"Requested ticket quantity exceeds available tickets. Only {event_obj.tickets_remaining()} tickets are remaining.")
-        elif  event_obj.status == "past":
-            messages.warning(request, f"Sorry. this Event's date has Passed.")
-        elif  event_obj.status == "canceled":
-            messages.warning(request, f"Sorry. this Event has been canceled.")
-        else:    
-            ticket_bought =  Ticket.objects.create(
-                    event = event_obj,
-                    attender = request.user,
-                    quantity = quantity
-                )
-            total_price = int(quantity) * event_obj.price
-            if event_obj.tickets_remaining == 0:
-                event_obj.is_sold_out = True
+
+    if request.method != "POST":
+        return HttpResponseRedirect(reverse("event", args=(event_id,)))
+
+    quantity = int(request.POST.get("quantity"))
+
+    try:
+        with transaction.atomic():
+            #  Lock the event row FIRST
+            event_obj = Event.objects.select_for_update().get(id=event_id)
+
+            #  All reads happen AFTER lock
+            remaining = event_obj.tickets_remaining()
+
+            if event_obj.status == "past":
+                messages.warning(request, "Sorry. This event's date has passed.")
+                return HttpResponseRedirect(reverse("event", args=(event_id,)))
+
+            if event_obj.status == "canceled":
+                messages.warning(request, "Sorry. This event has been canceled.")
+                return HttpResponseRedirect(reverse("event", args=(event_id,)))
+
+            if remaining <= 0:
                 event_obj.status = "sold_out"
-            messages.success(request, f"Ticket was purchased successfully.")
-            
-            # sendticket confirmation email
-            ticket_info = f"Event: {ticket_bought.event.title}\nDate: {ticket_bought.event.date}\nLocation: {ticket_bought.event.location}"
-            send_ticket_email.delay(request.user.email, ticket_info)
-            return render(request, "events/reciept.html", {
-                "ticket_bought" : ticket_bought,
-                "total_price" : total_price
-            })
-            
-      
-    return HttpResponseRedirect(reverse("event", args=(event_id,) )) 
+                event_obj.save(update_fields=["status"])
+                messages.warning(request, "Sold out! No more tickets available.")
+                return HttpResponseRedirect(reverse("event", args=(event_id,)))
+
+            if quantity > remaining:
+                messages.warning(
+                    request,
+                    f"Only {remaining} tickets are remaining."
+                )
+                return HttpResponseRedirect(reverse("event", args=(event_id,)))
+
+            #  Create ticket atomically
+            ticket_bought = Ticket.objects.create(
+                event=event_obj,
+                attender=request.user,
+                quantity=quantity
+            )
+
+            #  Update status if this purchase sold out the event
+            if remaining - quantity == 0:
+                event_obj.status = "sold_out"
+                event_obj.save(update_fields=["status"])
+
+        #  Side effects AFTER commit
+        total_price = quantity * event_obj.price
+
+        ticket_info = (
+            f"Event: {event_obj.title}\n"
+            f"Date: {event_obj.date}\n"
+            f"Location: {event_obj.location}"
+        )
+
+        send_ticket_email.delay(request.user.email, ticket_info)
+
+        messages.success(request, "Ticket was purchased successfully.")
+
+        return render(request, "events/reciept.html", {
+            "ticket_bought": ticket_bought,
+            "total_price": total_price
+        })
+
+    except Event.DoesNotExist:
+        return HttpResponseRedirect(reverse("index"))
 
 
 def search_view(request):

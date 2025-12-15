@@ -4,7 +4,7 @@
 <div class="container-fluid align-content-center" style="height: 85vh;">
     <div class="row  justify-content-center">
         <div class="col-lg-5 col-12">
-            <div class="auth-container justify-content-center mx-auto p-5 ">
+            <div class="auth-container justify-content-center mx-auto ">
                 <h2>Login</h2>
         
                 {% if message %}
@@ -36,11 +36,12 @@
                     <div class="error">
                     {{ form.non_field_errors.0 }}
                     </div>
-                {% endif %}
-                {% if form.errors %}
-                    <div class="error">
-                    Invalid credentials or missing fields
-                    </div>
+                {% else %}
+                    {% if form.errors %}
+                        <div class="error">
+                        Invalid credentials or missing fields
+                        </div>
+                    {% endif %}
                 {% endif %}
 
                 <button>Sign in</button>

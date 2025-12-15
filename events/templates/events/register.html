@@ -1,64 +1,80 @@
 {% extends "events/layout.html" %}
 
 {% block body %}
-<div class="auth-container justify-content-center mx-auto m-5 p-5">
-    <h2>Register</h2>
+<div class="container-fluid align-content-center" style="height: 85vh;">
+    <div class="row  justify-content-center">
+        <div class="col-lg-5 col-12">
+          <div class="auth-container align-items-center justify-content-center mx-auto  ">
+              <h2>Register</h2>
 
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+              {% if message %}
+                  <div>{{ message }}</div>
+              {% endif %}
 
-    
-                <form method="post" class="auth">
-            {% csrf_token %}
+              
+              <form method="post" class="auth m-auto">
+                {% csrf_token %}
+                <input
+                    required
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    value="{{ form.email.value|default:'' }}"
+                    autocomplete="email"
+                />
 
-            <input
-              required
-              type="text"
-              name="username"
-              placeholder="Username"
-              value="{{ form.username.value|default:'' }}"
-              autocomplete="username"
-            />
+                <input
+                  required
+                  type="text"
+                  name="username"
+                  placeholder="Username"
+                  value="{{ form.username.value|default:'' }}"
+                  autocomplete="username"
+                />
 
-            <input
-              required
-              type="password"
-              name="password1"
-              placeholder="Password"
-              autocomplete="new-password"
-            />
+                
 
-            <input
-              required
-              type="password"
-              name="password2"
-              placeholder="Confirm password"
-              autocomplete="new-password"
-            />
+                <input
+                  required
+                  type="password"
+                  name="password1"
+                  placeholder="Password"
+                  autocomplete="new-password"
+                />
 
-            {% if form.errors %}
-              <div class="error">
-                {{ form.errors.as_text }}
-              </div>
-            {% endif %}
+                <input
+                  required
+                  type="password"
+                  name="password2"
+                  placeholder="Confirm password"
+                  autocomplete="new-password"
+                />
 
-            <button>Create account</button>
-          </form>
+                {% if form.errors %}
+                  <div class="error">
+                    {{ form.errors.as_text }}
+                  </div>
+                {% endif %}
+
+                <button>Create account</button>
+              </form>
 
 
-            Already have an account? <a href="{% url 'login' %}">Log In here.</a>
-           
+              Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+                    
 
-        {% for field in form %}
-  {% for error in field.errors %}
-    <script>
-      const field = document.querySelector('[name="{{ field.name }}"]')
-      const errorEl = field.parentElement.querySelector('.error')
-      errorEl.textContent = "{{ error|escapejs }}"
-      errorEl.style.display = "block"
-    </script>
-  {% endfor %}
-{% endfor %}
+            {% for field in form %}
+            {% for error in field.errors %}
+              <script>
+                const field = document.querySelector('[name="{{ field.name }}"]')
+                const errorEl = field.parentElement.querySelector('.error')
+                errorEl.textContent = "{{ error|escapejs }}"
+                errorEl.style.display = "block"
+              </script>
+            {% endfor %}
+          {% endfor %}
+          </div>
+</div>
+</div>
 </div>
 {% endblock %}

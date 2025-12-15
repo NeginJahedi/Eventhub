@@ -65,11 +65,8 @@ class Event(models.Model):
         return (self.tickets_sold() * self.price)
     
     def is_sold_out(self):
-        if self.tickets_sold() >= self.tickets_available:
-            self.status = "sold_out"
-            self.save()
-            return True
-        return False
+        return self.tickets_sold() >= self.tickets_available
+        
     
     def is_passed(self):
         return self.date < timezone.now().date()
@@ -77,10 +74,7 @@ class Event(models.Model):
     def mark_as_passed(self):
         self.status = "past"
         self.save()
-    # def is_passed(self):
-    #     if self.date < timezone.now().date():
-    #         self.status = "past"
-    #         self.save()
+   
     
 class Review(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="reviews")

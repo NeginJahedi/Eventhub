@@ -192,6 +192,14 @@ footer {
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     text-align: center;
+    @media(max-width: 576px){
+      padding: 30px 20px;
+      margin: 0 20px;
+    }
+    @media(max-width: 388px){
+      padding: 30px 10px;
+      margin: 0 10px;
+    }
 }
 
 .auth-container h2 {
@@ -396,7 +404,7 @@ $font-stack: 'Poppins', sans-serif;
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  background: #fafafa;
+  
 }
 
 .auth {
@@ -404,6 +412,15 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  // @media(max-width: 768px){
+  //   margin: auto 30px;
+  // }
+  // @media(max-width: 576px){
+  //   margin: auto 20px;
+  // }
+  // @media(max-width: 576px){
+  //   margin: auto 10px;
+  // }
 }
 
 .auth input {
@@ -435,7 +452,9 @@ body {
   font-size: 14px;
   outline: none;
   font-size: 12px;
-  color: rgba(152, 55, 52, 0.7);
+  color: #fff;
+  background-color: rgba(152, 55, 52, 0.3);
+  border: 1px solid  rgba(152, 55, 52, 0.3);
   line-height: 1.4;
 }
 

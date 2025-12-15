@@ -156,6 +156,18 @@ footer p {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   text-align: center;
 }
+@media (max-width: 576px) {
+  .auth-container {
+    padding: 30px 20px;
+    margin: 0 20px;
+  }
+}
+@media (max-width: 388px) {
+  .auth-container {
+    padding: 30px 10px;
+    margin: 0 10px;
+  }
+}
 
 .auth-container h2 {
   margin-bottom: 20px;

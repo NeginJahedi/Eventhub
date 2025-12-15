@@ -192,6 +192,14 @@ footer {
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     text-align: center;
+    @media(max-width: 576px){
+      padding: 30px 20px;
+      margin: 0 20px;
+    }
+    @media(max-width: 388px){
+      padding: 30px 10px;
+      margin: 0 10px;
+    }
 }
 
 .auth-container h2 {
@@ -404,6 +412,15 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  // @media(max-width: 768px){
+  //   margin: auto 30px;
+  // }
+  // @media(max-width: 576px){
+  //   margin: auto 20px;
+  // }
+  // @media(max-width: 576px){
+  //   margin: auto 10px;
+  // }
 }
 
 .auth input {

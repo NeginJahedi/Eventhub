@@ -56,9 +56,16 @@ class EventForm(forms.ModelForm):
 
 
 class EventsUserCreationForm(UserCreationForm):
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            "placeholder": "Email",
+            "autocomplete": "email"
+        })
+    )
     class Meta(UserCreationForm.Meta):
         model = EventsUser
-        fields = ("username",)
+        fields = ("username", "email")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -76,6 +83,10 @@ class EventsUserCreationForm(UserCreationForm):
         self.fields["password2"].widget.attrs.update({
             "placeholder": "Confirm password",
             "autocomplete": "new-password"
+        })
+        self.fields["email"].widget.attrs.update({
+            "placeholder": "Email",
+            "autocomplete": "email"
         })
 
         for field in self.fields.values():
