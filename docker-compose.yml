@@ -82,6 +82,7 @@ services:
 
   celery:
     build: .
+    entrypoint: []
     command: celery -A EventHub worker -l info
     env_file:
       - .env
@@ -98,4 +99,3 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
-
