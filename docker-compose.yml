@@ -86,7 +86,7 @@ volumes:
   static_volume:
   media_volume:
 
-  celery:
+celery:
     build: .
     command: celery -A EventHub worker -l info
     env_file:
