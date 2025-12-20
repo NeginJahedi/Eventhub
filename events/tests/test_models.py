@@ -9,6 +9,7 @@ def test_tickets_remaining():
     TicketFactory(event=event, quantity=2)
     TicketFactory(event=event, quantity=1)
 
+    assert event.tickets_sold() == 3
     assert event.tickets_remaining() == 2
 
 

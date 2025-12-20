@@ -16,8 +16,8 @@ class UserFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def password(self, create, extracted, **kwargs):
-        pwd = extracted or "password123"
-        self.set_password(pwd)
+        password = extracted or "password123"
+        self.set_password(password)
         if create:
             self.save()
 
@@ -32,14 +32,16 @@ class EventFactory(factory.django.DjangoModelFactory):
     location = "Test Location"
     date = factory.LazyFunction(lambda: timezone.now().date())
     time = factory.LazyFunction(lambda: timezone.now().time())
-    price = Decimal("10.00")
-    tickets_available = 10
-    status = "active"
     image = factory.django.ImageField(color="blue")
+
+    tickets_available = 10
+    price = Decimal("10.00")
+    status = "active"
 
     organizer = factory.SubFactory(
         UserFactory,
         is_organizer=True,
+        is_attendee=False,
     )
 
 

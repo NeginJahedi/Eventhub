@@ -1,5 +1,5 @@
-from django.urls import reverse
 import pytest
+from django.urls import reverse
 
 from events.tests.factories import EventFactory, UserFactory
 
@@ -14,6 +14,7 @@ def test_buy_ticket_success(client):
     response = client.post(
         reverse("buy_ticket", args=[event.id]),
         {"quantity": 2},
+        follow=True,
     )
 
     event.refresh_from_db()
