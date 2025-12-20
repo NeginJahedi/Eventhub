@@ -80,13 +80,7 @@ services:
       - ./nginx/certbot/www:/var/www/certbot
       - ./nginx/certbot/conf:/etc/letsencrypt
 
-
-volumes:
-  postgres_data:
-  static_volume:
-  media_volume:
-
-celery:
+  celery:
     build: .
     command: celery -A EventHub worker -l info
     env_file:
@@ -98,3 +92,10 @@ celery:
         condition: service_healthy
     networks:
       - eventhub-net
+
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+
