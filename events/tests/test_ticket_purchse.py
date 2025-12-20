@@ -6,23 +6,16 @@ from events.models import Ticket
 
 @pytest.mark.django_db
 def test_buy_ticket_success(client):
-    user = UserFactory(is_attendee=True)
-    user.save()
+    user = UserFactory(is_attendee=True)  # password handled by factory
     event = EventFactory(tickets_available=5)
-    event.save()
     
-    client.force_login(username=user.username, password="password123")
+    client.force_login(user)
 
     response = client.post(
         reverse("buy", args=[event.id]),
         {"quantity": 2},
         follow=True,
     )
-    print("status", response.status_code)
-    print("content:", response.content.decode()[:500])
-    
-    print("tickets count:", Ticket.objects.filter(event=event).count())
-
 
     event.refresh_from_db()
 

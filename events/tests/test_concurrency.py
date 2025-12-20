@@ -10,15 +10,12 @@ from events.tests.factories import EventFactory, UserFactory
 def test_no_oversell_under_concurrency():
     event = EventFactory(tickets_available=1)
     users = [UserFactory() for _ in range(2)]
-    for user in users:
-        user.set_password("password123")
-        user.save()
 
     def attempt_purchase(user):
         client = Client()
-        client.login(username=user.username, password="password123")
+        client.force_login(user)
         client.post(
-            reverse("buy_ticket", args=[event.id]),
+            reverse("buy", args=[event.id]),
             {"quantity": 1},
             follow=True,
         )
@@ -31,6 +28,5 @@ def test_no_oversell_under_concurrency():
         t.join()
 
     event.refresh_from_db()
-
     assert event.tickets_sold() == 1
     assert event.tickets_remaining() == 0
