@@ -4,7 +4,8 @@ from events.tests.factories import EventFactory, TicketFactory
 
 @pytest.mark.django_db
 def test_tickets_remaining():
-    event = EventFactory(total_tickets=5)
+    event = EventFactory(tickets_available=5)
+
     TicketFactory(event=event, quantity=2)
     TicketFactory(event=event, quantity=1)
 
@@ -13,7 +14,8 @@ def test_tickets_remaining():
 
 @pytest.mark.django_db
 def test_event_revenue():
-    event = EventFactory(price=10)
+    event = EventFactory(price=10, tickets_available=10)
+
     TicketFactory(event=event, quantity=3)
 
     assert event.revenue() == 30

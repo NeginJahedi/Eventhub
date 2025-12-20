@@ -1,7 +1,8 @@
 import factory
-from django.utils import timezone
-from events.models import User, Event, Ticket
 from decimal import Decimal
+from django.utils import timezone
+
+from events.models import User, Event, Ticket
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -9,8 +10,16 @@ class UserFactory(factory.django.DjangoModelFactory):
         model = User
 
     username = factory.Sequence(lambda n: f"user{n}")
-    email = factory.LazyAttribute(lambda o: f"{o.username}@test.com")
-    password = factory.PostGenerationMethodCall("set_password", "password123")
+    email = factory.LazyAttribute(lambda obj: f"{obj.username}@test.com")
+    is_attendee = True
+    is_organizer = False
+
+    @factory.post_generation
+    def password(self, create, extracted, **kwargs):
+        pwd = extracted or "password123"
+        self.set_password(pwd)
+        if create:
+            self.save()
 
 
 class EventFactory(factory.django.DjangoModelFactory):
@@ -19,12 +28,19 @@ class EventFactory(factory.django.DjangoModelFactory):
 
     title = "Test Event"
     description = "Test Description"
+    category = "arts"
     location = "Test Location"
     date = factory.LazyFunction(lambda: timezone.now().date())
+    time = factory.LazyFunction(lambda: timezone.now().time())
     price = Decimal("10.00")
-    total_tickets = 10
+    tickets_available = 10
     status = "active"
-    organizer = factory.SubFactory(UserFactory)
+    image = factory.django.ImageField(color="blue")
+
+    organizer = factory.SubFactory(
+        UserFactory,
+        is_organizer=True,
+    )
 
 
 class TicketFactory(factory.django.DjangoModelFactory):
@@ -32,5 +48,8 @@ class TicketFactory(factory.django.DjangoModelFactory):
         model = Ticket
 
     event = factory.SubFactory(EventFactory)
-    attender = factory.SubFactory(UserFactory)
+    attender = factory.SubFactory(
+        UserFactory,
+        is_attendee=True,
+    )
     quantity = 1
