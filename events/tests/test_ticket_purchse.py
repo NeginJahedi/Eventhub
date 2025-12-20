@@ -12,7 +12,7 @@ def test_buy_ticket_success(client):
     client.login(username=user.username, password="password123")
 
     response = client.post(
-        reverse("buy_ticket_view", args=[event.id]),
+        reverse("buy", args=[event.id]),
         {"quantity": 2},
         follow=True,
     )

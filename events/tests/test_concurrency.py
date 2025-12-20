@@ -15,7 +15,7 @@ def test_no_oversell_under_concurrency():
         client = Client()
         client.login(username=user.username, password="password123")
         client.post(
-            reverse("buy_ticket_view", args=[event.id]),
+            reverse("buy", args=[event.id]),
             {"quantity": 1},
         )
 
