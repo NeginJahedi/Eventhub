@@ -12,3 +12,8 @@ dj-database-url
 python-dotenv
 whitenoise
 watchgod
+pytest
+pytest-django
+pytest-xdist
+factory-boy
+flake8

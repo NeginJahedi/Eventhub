@@ -85,3 +85,16 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
+
+  celery:
+    build: .
+    command: celery -A EventHub worker -l info
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    networks:
+      - eventhub-net
