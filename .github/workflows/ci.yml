@@ -48,6 +48,7 @@ jobs:
           docker run --rm \
             --entrypoint "" \
             --network host \
+            -v ${{ github.workspace }}:/app \
             -e DJANGO_SETTINGS_MODULE=EventHub.settings \
             -e DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/postgres \
             -e REDIS_URL=redis://127.0.0.1:6379/0 \
@@ -59,6 +60,7 @@ jobs:
           docker run --rm \
             --entrypoint "" \
             --network host \
+            -v ${{ github.workspace }}:/app \
             -e DJANGO_SETTINGS_MODULE=EventHub.settings \
             -e DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/postgres \
             -e REDIS_URL=redis://127.0.0.1:6379/0 \
