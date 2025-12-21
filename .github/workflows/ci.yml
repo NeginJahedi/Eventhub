@@ -36,7 +36,8 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Build web image
         run: |
@@ -45,6 +46,7 @@ jobs:
       - name: Run migrations
         run: |
           docker run --rm \
+            --entrypoint "" \
             --network host \
             -e DJANGO_SETTINGS_MODULE=EventHub.settings \
             -e DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/postgres \
@@ -55,6 +57,7 @@ jobs:
       - name: Run pytest
         run: |
           docker run --rm \
+            --entrypoint "" \
             --network host \
             -e DJANGO_SETTINGS_MODULE=EventHub.settings \
             -e DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/postgres \
