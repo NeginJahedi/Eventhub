@@ -27,7 +27,8 @@ COPY . .
 
 # Add entrypoint script
 COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh /wait-for-db.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["gunicorn", "EventHub.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
