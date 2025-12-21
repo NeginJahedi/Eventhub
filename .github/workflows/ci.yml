@@ -1,45 +1,91 @@
-name: Django CI
+name: Django CI (pytest)
 
 on:
   push:
-    branches: [ "main", "tests" ]
+    branches: [ "main", "tests", "develop" ]
   pull_request:
-    branches: [ "main", "tests" ]
+    branches: [ "main", "tests", "develop" ]
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
+    # Start Postgres and Redis as services (same images/versions you use locally)
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres" 
+          --health-interval 5s 
+          --health-timeout 5s 
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # keep these consistent with your local/dev env; adjust if your settings expect different names
+      DJANGO_SETTINGS_MODULE: EventHub.settings
+      PYTHONUNBUFFERED: 1
+      # Database URL (many Django projects use DATABASE_URL)
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+      # Helpful Redis/Celery envs if your tests reference them
+      REDIS_URL: redis://127.0.0.1:6379/0
+      CELERY_BROKER_URL: redis://127.0.0.1:6379/0
+
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
 
-      - name: Build containers
+      - name: Install apt deps (pg_isready client)
         run: |
-          docker compose -f docker-compose.dev.yml build
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
 
-      - name: Start services
+      - name: Install Python deps
         run: |
-          docker compose -f docker-compose.dev.yml up -d db redis
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Wait for Postgres
+      - name: Wait for Postgres to be ready
         run: |
-          until docker compose -f docker-compose.dev.yml exec -T db pg_isready -U postgres; do
-            sleep 2
+          echo "Waiting for Postgres..."
+          for i in {1..60}; do
+            pg_isready -h 127.0.0.1 -p 5432 -U postgres && break
+            echo "Postgres not ready yet, sleeping..."
+            sleep 1
           done
+          pg_isready -h 127.0.0.1 -p 5432 -U postgres
 
       - name: Run migrations
         run: |
-          docker compose -f docker-compose.dev.yml run --rm web python manage.py migrate
+          python manage.py migrate --noinput
 
-      - name: Run tests
+      - name: Run tests (pytest)
         run: |
-          docker compose -f docker-compose.dev.yml run --rm web pytest
+          pytest -q
 
-      - name: Tear down
+      - name: Upload test results (JUnit) if pytest-junitxml used
         if: always()
-        run: |
-          docker compose -f docker-compose.dev.yml down -v
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-report
+          path: ./junit.xml
