@@ -133,10 +133,7 @@ def buy_ticket_view(request, event_id):
             if quantity > remaining:
                 messages.warning(request, f"Only {remaining} tickets are remaining.")
                 return HttpResponseRedirect(reverse("event", args=(event_id,)))
-            # debug — temporary: print authentication + remaining/quantity to test stdout
-            print("DEBUG buy_ticket_view: user:", getattr(request.user, "username", request.user), "authenticated:", request.user.is_authenticated)
-            print("DEBUG buy_ticket_view: event_id:", event_id, "remaining:", remaining, "quantity:", quantity)
-
+            
             # Create ticket while inside the transaction
             ticket_bought = Ticket.objects.create(
                 event=event_obj, attender=request.user, quantity=quantity
