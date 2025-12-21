@@ -1,17 +1,15 @@
-name: Django CI (pytest)
+name: Django CI (Docker)
 
 on:
   push:
     branches: [ "main", "tests", "develop" ]
   pull_request:
     branches: [ "main", "tests", "develop" ]
-  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    # Start Postgres and Redis as services (same images/versions you use locally)
     services:
       postgres:
         image: postgres:15
@@ -22,10 +20,11 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres" 
-          --health-interval 5s 
-          --health-timeout 5s 
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
           --health-retries 5
+
       redis:
         image: redis:7
         ports:
@@ -36,56 +35,29 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    env:
-      # keep these consistent with your local/dev env; adjust if your settings expect different names
-      DJANGO_SETTINGS_MODULE: EventHub.settings
-      PYTHONUNBUFFERED: 1
-      # Database URL (many Django projects use DATABASE_URL)
-      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
-      # Helpful Redis/Celery envs if your tests reference them
-      REDIS_URL: redis://127.0.0.1:6379/0
-      CELERY_BROKER_URL: redis://127.0.0.1:6379/0
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-
-      - name: Install apt deps (pg_isready client)
+      - name: Build web image
         run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
-
-      - name: Install Python deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Wait for Postgres to be ready
-        run: |
-          echo "Waiting for Postgres..."
-          for i in {1..60}; do
-            pg_isready -h 127.0.0.1 -p 5432 -U postgres && break
-            echo "Postgres not ready yet, sleeping..."
-            sleep 1
-          done
-          pg_isready -h 127.0.0.1 -p 5432 -U postgres
+          docker build -f Dockerfile.dev -t eventhub-web .
 
       - name: Run migrations
         run: |
-          python manage.py migrate --noinput
+          docker run --rm \
+            --network host \
+            -e DJANGO_SETTINGS_MODULE=EventHub.settings \
+            -e DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/postgres \
+            -e REDIS_URL=redis://127.0.0.1:6379/0 \
+            eventhub-web \
+            python manage.py migrate --noinput
 
-      - name: Run tests (pytest)
+      - name: Run pytest
         run: |
-          pytest -q
-
-      - name: Upload test results (JUnit) if pytest-junitxml used
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pytest-report
-          path: ./junit.xml
+          docker run --rm \
+            --network host \
+            -e DJANGO_SETTINGS_MODULE=EventHub.settings \
+            -e DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/postgres \
+            -e REDIS_URL=redis://127.0.0.1:6379/0 \
+            eventhub-web \
+            pytest -q
