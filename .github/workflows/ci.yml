@@ -1,37 +1,25 @@
-# .github/workflows/docker-tests.yml
-name: Run Tests in Docker
+# .github/workflows/tests.yml
+name: Docker tests
 
 on:
   push:
-    branches:
-      - tests
   pull_request:
 
 jobs:
   tests:
     runs-on: ubuntu-latest
-    
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Compose
-        uses: docker/setup-buildx-action@v3
+      - name: Build images
+        run: docker compose -f docker-compose.dev.yml build
 
-      - name: Build and start Docker Compose services
+      - name: Run tests (same env as local)
         run: |
-          docker compose -f docker-compose.dev.yml up -d --build
+          docker compose -f docker-compose.dev.yml run --rm web pytest
 
-      - name: Wait for DB and Redis
-        run: |
-          # wait-for-db.sh already exists in your Docker setup, so we can call it
-          docker compose -f docker-compose.dev.yml exec web /wait-for-db.sh
-
-      - name: Run Tests
-        run: |
-          docker compose -f docker-compose.dev.yml exec web pytest
-
-      - name: Stop and remove containers
+      - name: Cleanup
         if: always()
         run: docker compose -f docker-compose.dev.yml down -v
