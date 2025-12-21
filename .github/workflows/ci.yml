@@ -10,21 +10,7 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
-    services:
-      # Optional: if you want GitHub-managed services instead of docker-compose for DB/Redis
-      # But we will use docker-compose, so this is commented out
-      # postgres:
-      #   image: postgres:15
-      #   env:
-      #     POSTGRES_USER: postgres
-      #     POSTGRES_PASSWORD: postgres
-      #     POSTGRES_DB: postgres
-      #   ports:
-      #     - 5432:5432
-      # redis:
-      #   image: redis:7
-      #   ports:
-      #     - 6379:6379
+    
 
     steps:
       - name: Checkout code
