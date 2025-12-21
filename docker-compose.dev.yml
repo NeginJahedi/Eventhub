@@ -1,35 +1,50 @@
 
-services:
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    volumes:
-      - postgres_dev_data:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
+# services:
+#   db:
+#     image: postgres:15
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: postgres
+#       POSTGRES_DB: postgres
+#     volumes:
+#       - postgres_dev_data:/var/lib/postgresql/data
+#     ports:
+#       - "5433:5432"
 
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"
+#   redis:
+#     image: redis:7
+#     ports:
+#       - "6379:6379"
 
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    command: watchgod manage:runserver 0.0.0.0:8000
-    env_file:
-      - .env.dev
-    volumes:
-      - .:/app:cached
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-      - redis
+#   web:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile.dev
+#     command: watchgod manage:runserver 0.0.0.0:8000
+#     env_file:
+#       - .env.dev
+#     volumes:
+#       - .:/app:cached
+#     ports:
+#       - "8000:8000"
+#     depends_on:
+#       - db
+#       - redis
 
-volumes:
-  postgres_dev_data:
+# volumes:
+#   postgres_dev_data:
+
+web:
+  build:
+    context: .
+    dockerfile: Dockerfile.dev
+  command: watchgod manage:runserver 0.0.0.0:8000
+  env_file:
+    - .env.dev
+  volumes:
+    - .:/app:cached
+  ports:
+    - "8000:8000"
+  depends_on:
+    - db
+    - redis
