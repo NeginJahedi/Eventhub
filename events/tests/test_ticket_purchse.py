@@ -9,7 +9,9 @@ def test_buy_ticket_success(client):
     user = UserFactory(is_attendee=True)  # password handled by factory
     event = EventFactory(tickets_available=5)
     
-    client.force_login(user)
+    # ensure session auth backend is set so login persists across requests
+    client.force_login(user, backend='django.contrib.auth.backends.ModelBackend')
+
 
     response = client.post(
         reverse("buy", args=[event.id]),

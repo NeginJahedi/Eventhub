@@ -22,7 +22,8 @@ def test_no_oversell_under_concurrency(live_server):
     # Function each thread will run
     def attempt_purchase(user):
         client = Client()
-        client.force_login(user)
+        client.force_login(user, backend='django.contrib.auth.backends.ModelBackend')
+
         # Use live_server URL to ensure proper DB transactions across threads
         client.post(
             f"{live_server.url}{reverse('buy', args=[event.id])}",
