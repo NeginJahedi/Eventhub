@@ -34,4 +34,4 @@ jobs:
 
       - name: Stop and remove containers
         if: always()
-        run: docker-compose -f docker-compose.dev.yml down -v
+        run: docker compose -f docker-compose.dev.yml down -v
