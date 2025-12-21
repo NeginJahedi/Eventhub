@@ -1,68 +1,51 @@
-name: Django CI (Docker)
+# .github/workflows/docker-tests.yml
+name: Run Tests in Docker
 
 on:
   push:
-    branches: [ "main", "tests", "develop" ]
+    branches:
+      - tests
   pull_request:
-    branches: [ "main", "tests", "develop" ]
 
 jobs:
-  test:
+  tests:
     runs-on: ubuntu-latest
-
     services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
-
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
+      # Optional: if you want GitHub-managed services instead of docker-compose for DB/Redis
+      # But we will use docker-compose, so this is commented out
+      # postgres:
+      #   image: postgres:15
+      #   env:
+      #     POSTGRES_USER: postgres
+      #     POSTGRES_PASSWORD: postgres
+      #     POSTGRES_DB: postgres
+      #   ports:
+      #     - 5432:5432
+      # redis:
+      #   image: redis:7
+      #   ports:
+      #     - 6379:6379
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build web image
-        run: |
-          docker build -f Dockerfile.dev -t eventhub-web .
+      - name: Set up Docker Compose
+        uses: docker/setup-buildx-action@v3
 
-      - name: Run migrations
+      - name: Build and start Docker Compose services
         run: |
-          docker run --rm \
-            --entrypoint "" \
-            --network host \
-            -v ${{ github.workspace }}:/app \
-            -e DJANGO_SETTINGS_MODULE=EventHub.settings \
-            -e DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/postgres \
-            -e REDIS_URL=redis://127.0.0.1:6379/0 \
-            eventhub-web \
-            python manage.py migrate --noinput
+          docker compose -f docker-compose.dev.yml up -d --build
 
-      - name: Run pytest
+      - name: Wait for DB and Redis
         run: |
-          docker run --rm \
-            --entrypoint "" \
-            --network host \
-            -v ${{ github.workspace }}:/app \
-            -e DJANGO_SETTINGS_MODULE=EventHub.settings \
-            -e DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/postgres \
-            -e REDIS_URL=redis://127.0.0.1:6379/0 \
-            eventhub-web \
-            pytest -q
+          # wait-for-db.sh already exists in your Docker setup, so we can call it
+          docker compose -f docker-compose.dev.yml exec web /wait-for-db.sh
+
+      - name: Run Tests
+        run: |
+          docker compose -f docker-compose.dev.yml exec web pytest
+
+      - name: Stop and remove containers
+        if: always()
+        run: docker-compose -f docker-compose.dev.yml down -v
