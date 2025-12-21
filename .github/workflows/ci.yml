@@ -1,32 +1,14 @@
-name: CI
+- name: Build Docker Compose
+  run: docker compose -f docker-compose.dev.yml build
 
-on:
-  push:
-  pull_request:
+- name: Start services in detached mode
+  run: docker compose -f docker-compose.dev.yml up -d db redis
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
+- name: Wait for Postgres
+  run: |
+    until docker compose -f docker-compose.dev.yml exec db pg_isready -U postgres; do
+      sleep 2
+    done
 
-    steps:
-      - uses: actions/checkout@v4
-
-      # Install Docker
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build Docker Compose
-        run: docker-compose -f docker-compose.dev.yml build
-
-      - name: Start services in detached mode
-        run: docker-compose -f docker-compose.dev.yml up -d db redis
-
-      # Wait for db to be healthy
-      - name: Wait for Postgres
-        run: |
-          until docker-compose -f docker-compose.dev.yml exec db pg_isready -U postgres; do
-            sleep 2
-          done
-
-      - name: Run tests inside web container
-        run: docker-compose -f docker-compose.dev.yml run --rm web pytest -q --disable-warnings
+- name: Run tests inside web container
+  run: docker compose -f docker-compose.dev.yml run --rm web pytest -q --disable-warnings
