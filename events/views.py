@@ -102,14 +102,18 @@ def buy_ticket_view(request, event_id):
     if request.method != "POST":
         return HttpResponseRedirect(reverse("event", args=(event_id,)))
 
-    quantity = int(request.POST.get("quantity"))
+    try:
+        quantity = int(request.POST.get("quantity", 0))
+    except (TypeError, ValueError):
+        messages.warning(request, "Invalid ticket quantity.")
+        return HttpResponseRedirect(reverse("event", args=(event_id,)))
 
     try:
         with transaction.atomic():
-            #  Lock the event row FIRST
+            # Lock the event row to avoid oversell under concurrency
             event_obj = Event.objects.select_for_update().get(id=event_id)
 
-            #  All reads happen AFTER lock
+            # All reads after lock
             remaining = event_obj.tickets_remaining()
 
             if event_obj.status == "past":
@@ -130,27 +134,32 @@ def buy_ticket_view(request, event_id):
                 messages.warning(request, f"Only {remaining} tickets are remaining.")
                 return HttpResponseRedirect(reverse("event", args=(event_id,)))
 
-            #  Create ticket atomically
+            # Create ticket while inside the transaction
             ticket_bought = Ticket.objects.create(
                 event=event_obj, attender=request.user, quantity=quantity
             )
 
-            #  Update status if this purchase sold out the event
+            # Update status if this purchase sold out the event
             if remaining - quantity == 0:
                 event_obj.status = "sold_out"
                 event_obj.save(update_fields=["status"])
 
-        #  Side effects AFTER commit
+        # At this point the transaction has committed.
+        # Schedule side-effects to run only after commit to avoid race/visibility issues.
+        def _after_commit():
+            total_price = quantity * event_obj.price
+            ticket_info = (
+                f"Event: {event_obj.title}\n"
+                f"Date: {event_obj.date}\n"
+                f"Location: {event_obj.location}"
+            )
+            # use Celery task asynchronously — scheduled after commit
+            send_ticket_email.delay(request.user.email, ticket_info)
+            # no return value needed
+
+        transaction.on_commit(_after_commit)
+
         total_price = quantity * event_obj.price
-
-        ticket_info = (
-            f"Event: {event_obj.title}\n"
-            f"Date: {event_obj.date}\n"
-            f"Location: {event_obj.location}"
-        )
-
-        send_ticket_email.delay(request.user.email, ticket_info)
-
         messages.success(request, "Ticket was purchased successfully.")
 
         return render(
