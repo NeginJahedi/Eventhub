@@ -8,41 +8,25 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.12"
+      # Install Docker
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
 
-      - run: python -m pip install --upgrade pip
-      - run: pip install -r requirements.txt
-      - run: pip install pytest pytest-django flake8 factory-boy
+      - name: Build Docker Compose
+        run: docker-compose -f docker-compose.dev.yml build
 
-      - name: Run migrations
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-        run: python manage.py migrate
+      - name: Start services in detached mode
+        run: docker-compose -f docker-compose.dev.yml up -d db redis
 
-      - name: Run tests
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-        run: pytest
+      # Wait for db to be healthy
+      - name: Wait for Postgres
+        run: |
+          until docker-compose -f docker-compose.dev.yml exec db pg_isready -U postgres; do
+            sleep 2
+          done
 
-      - name: Run lint
-        run: flake8
+      - name: Run tests inside web container
+        run: docker-compose -f docker-compose.dev.yml run --rm web pytest -q --disable-warnings

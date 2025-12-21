@@ -83,13 +83,26 @@ TEMPLATES = [
 WSGI_APPLICATION = "EventHub.wsgi.application"
 
 # DATABASE — switched to Postgres via DATABASE_URL
-DATABASES = {
-    "default": dj_database_url.parse(
-        os.environ.get("DATABASE_URL", "postgres://postgres:postgres@db:5432/postgres"),
-        conn_max_age=600,
-        ssl_require=False,
-    )
-}
+
+if os.environ.get("DJANGO_TESTING") == "1":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "test_db.sqlite3",
+        }
+    }
+else:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            os.environ.get(
+                "DATABASE_URL",
+                "postgres://postgres:postgres@db:5432/postgres"
+            ),
+            conn_max_age=600,
+            ssl_require=False,
+        )
+    }
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
