@@ -2,7 +2,7 @@
 set -e
 
 # Wait for DB
-./wait-for-db.sh db 5432
+/wait-for-db.sh db 5432
 
 # Apply migrations
 python manage.py migrate --noinput
